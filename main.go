@@ -50,6 +50,20 @@ func main() {
 	// http.HandleFunc("/", homeHandler)
 	// http.HandleFunc("/contact", contactHandler)
 	// http.HandleFunc("/", pathHandler)
+	// var router Router
+	// var router http.HandlerFunc
+	// router = pathHandler
+	// fmt.Println("Starting the server on :3000...")
+	// http.ListenAndServe(":3000", http.HandlerFunc(pathHandler))
+	// fmt.Println("Starting the server on :3000...")
+	// http.ListenAndServe(":3000", router)
+	// http.Handler - interface with the ServeHTTP method
+	// http.HandlerFunc - a function type that accepts same args as ServeHTTP method
+	// also implements http.Handler type
+	// http.Handle("/", http.HandlerFunc(homeHandler))
+	// http.Handle("/contact", http.HandlerFunc(contactHandler))
+	// http.HandleFunc("/", http.HandlerFunc(homeHandler).ServeHTTP)
+
 	var router Router
 	fmt.Println("Starting the server on :3000...")
 	http.ListenAndServe(":3000", router)
