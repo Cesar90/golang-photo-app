@@ -41,16 +41,16 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, `<h1>FAQ Page</h1>
-		<ul>
-			<li>
-				Is there a free version? YES! We Offer a free trial for 30 days on any
-				paid plans
-			</li>
-		</ul>
-
-	`)
+	tlpPath := filepath.Join("templates", "faq.gohtml")
+	executionTemplate(w, tlpPath)
+	// fmt.Fprint(w, `<h1>FAQ Page</h1>
+	// 	<ul>
+	// 		<li>
+	// 			Is there a free version? YES! We Offer a free trial for 30 days on any
+	// 			paid plans
+	// 		</li>
+	// 	</ul>
+	// `)
 }
 
 // func pathHandler(w http.ResponseWriter, r *http.Request) {
@@ -109,7 +109,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Get("/", homeHandler)
 	r.Get("/contact", contactHandler)
-	r.Get("/faq", contactHandler)
+	r.Get("/faq", faqHandler)
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Page not found", http.StatusNotFound)
 	})
