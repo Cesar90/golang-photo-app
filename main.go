@@ -2,31 +2,34 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
 
+	"github.com/Cesar90/golang-photo-app/views"
 	"github.com/go-chi/chi/v5"
 )
 
 func executionTemplate(w http.ResponseWriter, filepath string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	// fmt.Fprint(w, "<h1>Welome to my awesome site!!</h1>")
-	tpl, err := template.ParseFiles(filepath)
+	t, err := views.Parse(filepath)
 	if err != nil {
-		// panic(err) //TODO: Remove the panic
-		log.Printf("parsing template %v", err)
+		log.Printf("Parsing template %v", err)
 		http.Error(w, "There was an error parsing the template", http.StatusInternalServerError)
-		return
 	}
-	err = tpl.Execute(w, nil)
-	if err != nil {
-		// panic(err) //TODO: Remove the panic
-		log.Printf("parsing template %v", err)
-		http.Error(w, "There was an error executing the template", http.StatusInternalServerError)
-		return
-	}
+	t.Execute(w, nil)
+	// fmt.Fprint(w, "<h1>Welome to my awesome site!!</h1>")
+	// tpl, err := template.ParseFiles(filepath)
+	// if err != nil {
+	// 	// panic(err) //TODO: Remove the panic
+	// 	log.Printf("parsing template %v", err)
+	// 	http.Error(w, "There was an error parsing the template", http.StatusInternalServerError)
+	// 	return
+	// }
+	// viewTpl := views.Template{
+	// 	HTMLTpl: tpl,
+	// }
+	// viewTpl.Execute(w, nil)
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
