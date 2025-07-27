@@ -15,7 +15,17 @@ type Users struct {
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
-	u.Templates.New.Execute(w, nil)
+	var data struct {
+		Email string
+	}
+	//Read variables from url
+	//http://localhost:3000/signup?email=test@test.test
+	email := r.FormValue("email")
+	if email != "" {
+		data.Email = email
+	}
+	u.Templates.New.Execute(w, data)
+	// u.Templates.New.Execute(w, nil)
 }
 
 func (u Users) Create(w http.ResponseWriter, r *http.Request) {

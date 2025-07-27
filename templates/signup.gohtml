@@ -19,6 +19,8 @@
                     placeholder="Email Address"
                     required autocomplete="email"
                     class="w-full px-3 py-2 border border-gray-500 placeholder-gray-800"
+                    value="{{.Email}}"
+                    {{if not .Email}}autofocus{{end}}
                 />
             </div>
             <div class="py-2">
@@ -34,6 +36,7 @@
                     placeholder="Password"
                     required
                     class="w-full px-3 py-2 border border-gray-500 placeholder-gray-800"
+                    {{if .Email}}autofocus{{end}}
                 />
             </div>
             <div class="py-4">
