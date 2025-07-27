@@ -2,13 +2,14 @@ package controllers
 
 import (
 	"net/http"
-
-	"github.com/Cesar90/golang-photo-app/views"
 )
 
 type Users struct {
+	// Templates struct {
+	// 	New views.Template
+	// }
 	Templates struct {
-		New views.Template
+		New Template
 	}
 }
 

@@ -3,17 +3,17 @@ package controllers
 import (
 	"html/template"
 	"net/http"
-
-	"github.com/Cesar90/golang-photo-app/views"
 )
 
-func StaticHandler(tpl views.Template) http.HandlerFunc {
+// func StaticHandler(tpl views.Template) http.HandlerFunc {
+func StaticHandler(tpl Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		tpl.Execute(w, nil)
 	}
 }
 
-func FAQ(tpl views.Template) http.HandlerFunc {
+// func FAQ(tpl views.Template) http.HandlerFunc {
+func FAQ(tpl Template) http.HandlerFunc {
 	questions := []struct {
 		Question string
 		Answer   template.HTML
