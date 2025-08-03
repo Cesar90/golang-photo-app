@@ -3,6 +3,8 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/Cesar90/golang-photo-app/models"
 )
 
 type Users struct {
@@ -12,6 +14,7 @@ type Users struct {
 	Templates struct {
 		New Template
 	}
+	UserService *models.UserService
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {

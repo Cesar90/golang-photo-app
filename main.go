@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/Cesar90/golang-photo-app/controllers"
+	"github.com/Cesar90/golang-photo-app/models"
 	"github.com/Cesar90/golang-photo-app/templates"
 	"github.com/Cesar90/golang-photo-app/views"
 	"github.com/go-chi/chi/v5"
@@ -141,8 +142,19 @@ func main() {
 	// 	templates.FS,
 	// 	"signup.gohtml", "tailwind.gohtml",
 	// ))))
+	cfg := models.DefaultPostgresConfig()
+	db, err := models.Open(cfg)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+	userService := models.UserService{
+		DB: db,
+	}
 
-	usersC := controllers.Users{}
+	usersC := controllers.Users{
+		UserService: &userService, //TODO: Set this!
+	}
 	usersC.Templates.New = views.Must(views.ParseFS(
 		templates.FS,
 		"signup.gohtml", "tailwind.gohtml",
