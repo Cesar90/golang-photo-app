@@ -40,7 +40,17 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 	// }
 	// fmt.Fprint(w, "Email:", r.PostForm.Get("email"))
 	// fmt.Fprint(w, "Password:", r.PostForm.Get("password"))
-	fmt.Fprint(w, "Email:", r.FormValue("email"))
-	fmt.Fprint(w, "Password:", r.FormValue("password"))
+	// fmt.Fprint(w, "Email:", r.FormValue("email"))
+	// fmt.Fprint(w, "Password:", r.FormValue("password"))
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	user, err := u.UserService.Create(email, password)
+	if err != nil {
+		fmt.Println(err)
+		// http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprint(w, "User craeted: %+v", user)
 
 }
