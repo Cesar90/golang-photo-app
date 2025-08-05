@@ -93,3 +93,13 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 	// u.Templates.SignIn.Execute(w, data)
 	// u.Templates.New.Execute(w, nil)
 }
+
+func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
+	email, err := r.Cookie("email")
+	if err != nil {
+		fmt.Fprint(w, "The email cookie could not be read.")
+		return
+	}
+	fmt.Fprintf(w, "Email cookie: %s \n", email.Value)
+	fmt.Fprintf(w, "Headers: %+V \n", r.Header)
+}
