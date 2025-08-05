@@ -32,20 +32,6 @@ func (u Users) New(w http.ResponseWriter, r *http.Request) {
 	// u.Templates.New.Execute(w, nil)
 }
 
-func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
-	var data struct {
-		Email string
-	}
-	//Read variables from url
-	//http://localhost:3000/signup?email=test@test.test
-	email := r.FormValue("email")
-	if email != "" {
-		data.Email = email
-	}
-	u.Templates.SignIn.Execute(w, data)
-	// u.Templates.New.Execute(w, nil)
-}
-
 func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprint(w, "Tempory response")
 	// err := r.ParseForm()
@@ -67,5 +53,36 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprint(w, "User craeted: %+v", user)
+}
 
+func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email string
+	}
+	//Read variables from url
+	//http://localhost:3000/signup?email=test@test.test
+	email := r.FormValue("email")
+	if email != "" {
+		data.Email = email
+	}
+	u.Templates.SignIn.Execute(w, data)
+	// u.Templates.New.Execute(w, nil)
+}
+
+func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email    string
+		Password string
+	}
+	data.Email = r.FormValue("email")
+	data.Password = r.FormValue("password")
+	user, err := u.UserService.Authenticate(data.Email, data.Password)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprint(w, "User authenticate: %+v", user)
+	// u.Templates.SignIn.Execute(w, data)
+	// u.Templates.New.Execute(w, nil)
 }
