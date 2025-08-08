@@ -6,6 +6,8 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/csrf"
 )
 
 func Must(t Template, err error) Template {
@@ -50,9 +52,25 @@ type Template struct {
 }
 
 func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}) {
+	// We clone the template to avoid race condition bugs
+	// Since htmlTpl is a *template.Template (a pointer), sharing it across requests
+	// can cause issues like reusing the same CSRF token across multiple request
+	tpl, err := t.htmlTpl.Clone()
+	if err != nil {
+		log.Printf("Cloning template: %v, err")
+		http.Error(w, "There was an error rendering the page.", http.StatusInternalServerError)
+	}
+	tpl = tpl.Funcs(
+		template.FuncMap{
+			"csrfField": func() template.HTML {
+				return csrf.TemplateField(r)
+			},
+		},
+	)
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	// fmt.Fprint(w, "<h1>Welome to my awesome site!!</h1>")
-	err := t.htmlTpl.Execute(w, data)
+	// err := t.htmlTpl.Execute(w, data)
+	err = tpl.Execute(w, data)
 	if err != nil {
 		// panic(err) //TODO: Remove the panic
 		log.Printf("parsing template %v", err)
