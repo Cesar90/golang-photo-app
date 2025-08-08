@@ -6,7 +6,8 @@
         </h1>
         <form action="/users" method="post">
             <div class="hidden">
-                {{.CSRFField}}
+                {{/* .CSRFField */}}
+                {{csrfField}}
             </div>
             <div class="py-2">
                 <label 
