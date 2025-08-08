@@ -177,11 +177,13 @@ func main() {
 		http.Error(w, "Page not found", http.StatusNotFound)
 	})
 	fmt.Println("Starting the server on :3000...")
-	crsfKey := "gFvi45R4fy5xNBlnBeZtQbfAVCYEIAUX"
+	// crsfKey := "gFvi45R4fy5xNBlnBeZtQbfAVCYEIAUX"
+	csrfKey := []byte("gFvi45R4fy5xNBlnBeZtQbfAVCYEIAUX")
 	csrfMv := csrf.Protect(
-		[]byte(crsfKey),
+		csrfKey,
 		//TODO: Fix this before deploying
 		csrf.Secure(false),
+		// csrf.TrustedOrigins([]string{"http://localhost:3000", "http://127.0.0.1:3000"}),
 	)
 	http.ListenAndServe(":3000", csrfMv(r))
 	// http.ListenAndServe(":3000", TimerMiddleware(r.ServeHTTP))

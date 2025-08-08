@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 
 	"github.com/Cesar90/golang-photo-app/models"
+	"github.com/gorilla/csrf"
 )
 
 type Users struct {
@@ -20,7 +22,8 @@ type Users struct {
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
 	var data struct {
-		Email string
+		Email     string
+		CSRFField template.HTML
 	}
 	//Read variables from url
 	//http://localhost:3000/signup?email=test@test.test
@@ -28,6 +31,7 @@ func (u Users) New(w http.ResponseWriter, r *http.Request) {
 	if email != "" {
 		data.Email = email
 	}
+	data.CSRFField = csrf.TemplateField(r)
 	u.Templates.New.Execute(w, data)
 	// u.Templates.New.Execute(w, nil)
 }
@@ -57,7 +61,8 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 
 func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
 	var data struct {
-		Email string
+		Email     string
+		CSRFField template.HTML
 	}
 	//Read variables from url
 	//http://localhost:3000/signup?email=test@test.test
@@ -65,6 +70,7 @@ func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
 	if email != "" {
 		data.Email = email
 	}
+	data.CSRFField = csrf.TemplateField(r)
 	u.Templates.SignIn.Execute(w, data)
 	// u.Templates.New.Execute(w, nil)
 }
