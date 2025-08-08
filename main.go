@@ -5,12 +5,14 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"time"
 
 	"github.com/Cesar90/golang-photo-app/controllers"
 	"github.com/Cesar90/golang-photo-app/models"
 	"github.com/Cesar90/golang-photo-app/templates"
 	"github.com/Cesar90/golang-photo-app/views"
 	"github.com/go-chi/chi/v5"
+	"github.com/gorilla/csrf"
 )
 
 func executionTemplate(w http.ResponseWriter, filepath string) {
@@ -175,5 +177,20 @@ func main() {
 		http.Error(w, "Page not found", http.StatusNotFound)
 	})
 	fmt.Println("Starting the server on :3000...")
-	http.ListenAndServe(":3000", r)
+	crsfKey := "gFvi45R4fy5xNBlnBeZtQbfAVCYEIAUX"
+	csrfMv := csrf.Protect(
+		[]byte(crsfKey),
+		//TODO: Fix this before deploying
+		csrf.Secure(false),
+	)
+	http.ListenAndServe(":3000", csrfMv(r))
+	// http.ListenAndServe(":3000", TimerMiddleware(r.ServeHTTP))
+}
+
+func TimerMiddleware(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		h(w, r)
+		fmt.Println("Request time:", time.Since(start))
+	}
 }
