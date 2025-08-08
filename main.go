@@ -15,13 +15,13 @@ import (
 	"github.com/gorilla/csrf"
 )
 
-func executionTemplate(w http.ResponseWriter, filepath string) {
+func executionTemplate(w http.ResponseWriter, r *http.Request, filepath string) {
 	t, err := views.Parse(filepath)
 	if err != nil {
 		log.Printf("Parsing template %v", err)
 		http.Error(w, "There was an error parsing the template", http.StatusInternalServerError)
 	}
-	t.Execute(w, nil)
+	t.Execute(w, r, nil)
 	// fmt.Fprint(w, "<h1>Welome to my awesome site!!</h1>")
 	// tpl, err := template.ParseFiles(filepath)
 	// if err != nil {
@@ -39,17 +39,17 @@ func executionTemplate(w http.ResponseWriter, filepath string) {
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprint(w, "<h1>Welome to my awesome site!!</h1>")
 	tlpPath := filepath.Join("templates", "home.gohtml")
-	executionTemplate(w, tlpPath)
+	executionTemplate(w, r, tlpPath)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 	tlpPath := filepath.Join("templates", "contact.gohtml")
-	executionTemplate(w, tlpPath)
+	executionTemplate(w, r, tlpPath)
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
 	tlpPath := filepath.Join("templates", "faq.gohtml")
-	executionTemplate(w, tlpPath)
+	executionTemplate(w, r, tlpPath)
 	// fmt.Fprint(w, `<h1>FAQ Page</h1>
 	// 	<ul>
 	// 		<li>
