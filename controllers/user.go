@@ -129,7 +129,7 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	// tokenCookie, err := r.Cookie("session")
-	token, err := readCookie(r, CookieSession)
+	token, err := readCookie(r, "CookieSession")
 	// email, err := r.Cookie("email")
 	if err != nil {
 		fmt.Println(err)
@@ -144,7 +144,7 @@ func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 		// fmt.Fprint(w, "The email cookie could not be read.")
 		return
 	}
-	fmt.Fprintf(w, "Current user: %s\n", user.Email)
+	fmt.Fprintf(w, "Current user: %s\n", user)
 	// fmt.Fprintf(w, "Email cookie: %s \n", email.Value)
 	// fmt.Fprintf(w, "Headers: %+V \n", r.Header)
 }
