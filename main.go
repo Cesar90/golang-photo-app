@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/Cesar90/golang-photo-app/controllers"
+	"github.com/Cesar90/golang-photo-app/migrations"
 	"github.com/Cesar90/golang-photo-app/models"
 	"github.com/Cesar90/golang-photo-app/templates"
 	"github.com/Cesar90/golang-photo-app/views"
@@ -152,7 +153,8 @@ func main() {
 	}
 	defer db.Close()
 
-	err = models.Migrate(db, "migrations")
+	// err = models.Migrate(db, "migrations")
+	err = models.MigrateFS(db, migrations.FS, ".")
 	if err != nil {
 		panic(err)
 	}
