@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/pressly/goose/v3"
 )
 
 // Open will open a SQL connection with the provided
@@ -49,4 +50,18 @@ func (ctg PostgresConfig) String() string {
 		ctg.Database,
 		ctg.SSLMode,
 	)
+}
+
+func Migrate(db *sql.DB, dir string) error {
+	err := goose.SetDialect("postgres")
+	if err != nil {
+		return fmt.Errorf("migrate: %w", err)
+	}
+	// Command executed from the console
+	// goose postgres "host=localhost port=5432 user=postgres password=postgres dbname=golang-photos sslmode=disable" up
+	err = goose.Up(db, dir)
+	if err != nil {
+		return fmt.Errorf("migrate: %w", err)
+	}
+	return nil
 }
