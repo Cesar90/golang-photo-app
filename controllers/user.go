@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Cesar90/golang-photo-app/context"
 	"github.com/Cesar90/golang-photo-app/models"
 )
 
@@ -128,23 +129,30 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
+	user := context.User(r.Context())
+	if user == nil {
+		http.Redirect(w, r, "/signin", http.StatusFound)
+		return
+	}
+	fmt.Fprintf(w, "Current user: %\n", user.Email)
+
 	// tokenCookie, err := r.Cookie("session")
-	token, err := readCookie(r, "CookieSession")
-	// email, err := r.Cookie("email")
-	if err != nil {
-		fmt.Println(err)
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		// fmt.Fprint(w, "The email cookie could not be read.")
-		return
-	}
-	user, err := u.SessionService.User(token)
-	if err != nil {
-		fmt.Println(err)
-		http.Redirect(w, r, "/signin", http.StatusFound)
-		// fmt.Fprint(w, "The email cookie could not be read.")
-		return
-	}
-	fmt.Fprintf(w, "Current user: %s\n", user.Email)
+	// token, err := readCookie(r, "CookieSession")
+	// // email, err := r.Cookie("email")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	http.Redirect(w, r, "/signin", http.StatusFound)
+	// 	// fmt.Fprint(w, "The email cookie could not be read.")
+	// 	return
+	// }
+	// user, err := u.SessionService.User(token)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	http.Redirect(w, r, "/signin", http.StatusFound)
+	// 	// fmt.Fprint(w, "The email cookie could not be read.")
+	// 	return
+	// }
+	// fmt.Fprintf(w, "Current user: %s\n", user.Email)
 	// fmt.Fprintf(w, "Email cookie: %s \n", email.Value)
 	// fmt.Fprintf(w, "Headers: %+V \n", r.Header)
 }
