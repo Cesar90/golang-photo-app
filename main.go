@@ -123,7 +123,63 @@ func main() {
 	// })
 	// fmt.Println("Starting the server on :3000...")
 	// http.ListenAndServe(":3000", r)
+	///////////////////////////////
+	// Setup the database
+	cfg := models.DefaultPostgresConfig()
+	fmt.Println(cfg.String())
+	db, err := models.Open(cfg)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	// err = models.Migrate(db, "migrations")
+	err = models.MigrateFS(db, migrations.FS, ".")
+	if err != nil {
+		panic(err)
+	}
+
+	// Setup services
+	userService := models.UserService{
+		DB: db,
+	}
+
+	sessionService := models.SessionService{
+		DB: db,
+	}
+
+	// Setup middleware
+	umn := controllers.UserMiddleware{
+		SessionService: &sessionService,
+	}
+
+	// crsfKey := "gFvi45R4fy5xNBlnBeZtQbfAVCYEIAUX"
+	csrfKey := []byte("gFvi45R4fy5xNBlnBeZtQbfAVCYEIAUX")
+	csrfMv := csrf.Protect(
+		csrfKey,
+		//TODO: Fix this before deploying
+		csrf.Secure(false),
+		// csrf.TrustedOrigins([]string{"http://localhost:3000", "http://127.0.0.1:3000"}),
+	)
+
+	// Setup controllers
+	usersC := controllers.Users{
+		UserService:    &userService, //TODO: Set this!
+		SessionService: &sessionService,
+	}
+	usersC.Templates.New = views.Must(views.ParseFS(
+		templates.FS,
+		"signup.gohtml", "tailwind.gohtml",
+	))
+
+	usersC.Templates.SignIn = views.Must(views.ParseFS(
+		templates.FS,
+		"signin.gohtml", "tailwind.gohtml",
+	))
+
 	r := chi.NewRouter()
+	r.Use(csrfMv)
+	r.Use(umn.SetUser)
 	// r.Get("/", controllers.StaticHandler(views.Must(views.Parse(filepath.Join("templates", "home.gohtml")))))
 	// r.Get("/", controllers.StaticHandler(views.Must(views.ParseFS(templates.FS, "home.gohtml", "layout-parts.gohtml"))))
 	r.Get("/", controllers.StaticHandler(views.Must(views.ParseFS(
@@ -145,68 +201,26 @@ func main() {
 	// 	templates.FS,
 	// 	"signup.gohtml", "tailwind.gohtml",
 	// ))))
-	cfg := models.DefaultPostgresConfig()
-	fmt.Println(cfg.String())
-	db, err := models.Open(cfg)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	// err = models.Migrate(db, "migrations")
-	err = models.MigrateFS(db, migrations.FS, ".")
-	if err != nil {
-		panic(err)
-	}
-
-	userService := models.UserService{
-		DB: db,
-	}
-
-	sessionService := models.SessionService{
-		DB: db,
-	}
-
-	usersC := controllers.Users{
-		UserService:    &userService, //TODO: Set this!
-		SessionService: &sessionService,
-	}
-	usersC.Templates.New = views.Must(views.ParseFS(
-		templates.FS,
-		"signup.gohtml", "tailwind.gohtml",
-	))
-
-	usersC.Templates.SignIn = views.Must(views.ParseFS(
-		templates.FS,
-		"signin.gohtml", "tailwind.gohtml",
-	))
 
 	r.Get("/signup", usersC.New)
 	r.Post("/users", usersC.Create)
 	r.Get("/signin", usersC.SignIn)
 	r.Post("/signin", usersC.ProcessSignIn)
 	r.Post("/signout", usersC.ProcessSignOut)
-	r.Get("/users/me", usersC.CurrentUser)
+	// r.Get("/users/me", usersC.CurrentUser)
+	r.Route("/users/me", func(r chi.Router) {
+		r.Use(umn.RequireUser)
+		r.Get("/", usersC.CurrentUser)
+	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Page not found", http.StatusNotFound)
 	})
 
-	umn := controllers.UserMiddleware{
-		SessionService: &sessionService,
-	}
-
-	// crsfKey := "gFvi45R4fy5xNBlnBeZtQbfAVCYEIAUX"
-	csrfKey := []byte("gFvi45R4fy5xNBlnBeZtQbfAVCYEIAUX")
-	csrfMv := csrf.Protect(
-		csrfKey,
-		//TODO: Fix this before deploying
-		csrf.Secure(false),
-		// csrf.TrustedOrigins([]string{"http://localhost:3000", "http://127.0.0.1:3000"}),
-	)
-
+	// Start the server
 	fmt.Println("Starting the server on :3000...")
-	http.ListenAndServe(":3000", csrfMv(umn.SetUser(r)))
+	// http.ListenAndServe(":3000", csrfMv(umn.SetUser(r)))
+	http.ListenAndServe(":3000", r)
 	// http.ListenAndServe(":3000", TimerMiddleware(r.ServeHTTP))
 }
 
