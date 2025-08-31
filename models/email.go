@@ -1,10 +1,22 @@
 package models
 
-import "github.com/go-mail/mail/v2"
+import (
+	"fmt"
+
+	"github.com/go-mail/mail/v2"
+)
 
 const (
 	DefaultSender = "support@lenslocked.com"
 )
+
+type Email struct {
+	From      string
+	To        string
+	Subject   string
+	Plaintext string
+	HTML      string
+}
 
 type STMPConfig struct {
 	Host     string
@@ -28,4 +40,41 @@ type EmailService struct {
 
 	// unexported fields
 	dialer *mail.Dialer
+}
+
+func (es *EmailService) Send(email Email) error {
+	msg := mail.NewMessage()
+	msg.SetHeader("To", email.To)
+	// TODO: Set the From field to a default value if it is not set in the Email
+	// msg.SetHeader("From", email.From)
+	es.setFrom(msg, email)
+	msg.SetHeader("Subject", email.Subject)
+	switch {
+	case email.Plaintext != "" && email.HTML != "":
+		msg.SetBody("text/plain", email.Plaintext)
+		msg.AddAlternative("text/html", email.HTML)
+	case email.Plaintext != "":
+		msg.SetBody("text/plain", email.Plaintext)
+	case email.HTML != "":
+		msg.AddAlternative("text/html", email.HTML)
+	}
+	err := es.dialer.DialAndSend(msg)
+	if err != nil {
+		return fmt.Errorf("Send: %w", err)
+	}
+	return nil
+}
+
+func (es *EmailService) setFrom(msg *mail.Message, email Email) {
+	var from string
+	switch {
+	case email.From != "":
+		from = email.From
+	case es.DefaultSender != "":
+		from = es.DefaultSender
+	default:
+		from = DefaultSender
+	}
+	msg.SetHeader("From", from)
+
 }
