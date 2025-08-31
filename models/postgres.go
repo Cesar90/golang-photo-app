@@ -60,6 +60,7 @@ func Migrate(db *sql.DB, dir string) error {
 	}
 	// Command executed from the console
 	// goose postgres "host=localhost port=5432 user=postgres password=postgres dbname=golang-photos sslmode=disable" up
+	// Once that migration is created run goose fix to change name 0003_password_reset.sql
 	err = goose.Up(db, dir)
 	if err != nil {
 		return fmt.Errorf("migrate: %w", err)
