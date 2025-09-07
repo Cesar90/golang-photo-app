@@ -2,9 +2,12 @@
 <div class="py-12 flex justify-center">
     <div class="px-8 py-8 bg-white rounded shadow">
         <h1 class="pt-4 pb-8 text-center text-3xl font-bold text-gray-900">
-            Welcome back
+            Forgot your password?
         </h1>
-        <form action="/signin" method="post">
+        <p class="text-sm text-gray-600 pb-4">
+            No problem. Enter your email address below and we'll send you a link to reset your password.
+        </p>
+        <form action="/forgot-pw" method="post">
             <div class="hidden">
                 {{/* .CSRFField */}}
                 {{csrfField}}
@@ -24,23 +27,7 @@
                     required autocomplete="email"
                     class="w-full px-3 py-2 border border-gray-500 placeholder-gray-800"
                     value="{{.Email}}"
-                    {{if not .Email}}autofocus{{end}}
-                />
-            </div>
-            <div class="py-2">
-                <label
-                    class="text-sm font-semibold text-gray-800"
-                    for="password">
-                    Password
-                </label>
-                <input
-                    name="password"
-                    id="password"
-                    type="password"
-                    placeholder="Password"
-                    required
-                    class="w-full px-3 py-2 border border-gray-500 placeholder-gray-800"
-                    {{if .Email}}autofocus{{end}}
+                    autofocus
                 />
             </div>
             <div class="py-4">
@@ -48,7 +35,7 @@
                     type="submit"
                     class="w-full py-4 px-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold text-lg"
                 >
-                    Sign In
+                    Reset password
                 </button>
             </div>
             <div class="py-2 w-full flex justify-between">
@@ -59,8 +46,8 @@
                     </a>
                 </p>
                 <p class="text-xs text-gray-500">
-                    <a href="/forgot-pw" class="underline">
-                        Forgot your password?
+                    <a href="/signin" class="underline">
+                        Remember your password?
                     </a>
                 </p>
             </div>
