@@ -35,6 +35,6 @@ func (service *PasswordResetSevice) Create(email string) (*PasswordReset, error)
 	return nil, fmt.Errorf("TODO: Implement PasswordResetService.Create")
 }
 
-func (service *PasswordReset) Consume(token string) (*User, error) {
+func (service *PasswordResetSevice) Consume(token string) (*User, error) {
 	return nil, fmt.Errorf("TODO: Implement PasswordResetService.Consume")
 }
