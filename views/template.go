@@ -33,11 +33,12 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 				return "", fmt.Errorf("currentUser not implemented")
 			},
 			"errors": func() []string {
-				return []string{
-					"Don't do that",
-					"The email address you provided is already associated with an account",
-					"Something went wrong.",
-				}
+				// return []string{
+				// 	"Don't do that",
+				// 	"The email address you provided is already associated with an account",
+				// 	"Something went wrong.",
+				// }
+				return nil
 			},
 		},
 	)
@@ -66,7 +67,7 @@ type Template struct {
 	htmlTpl *template.Template
 }
 
-func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}) {
+func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}, errs ...error) {
 	// We clone the template to avoid race condition bugs
 	// Since htmlTpl is a *template.Template (a pointer), sharing it across requests
 	// can cause issues like reusing the same CSRF token across multiple request
@@ -82,6 +83,13 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 			},
 			"currentUser": func() *models.User {
 				return context.User(r.Context())
+			},
+			"errors": func() []string {
+				var errMessages []string
+				for _, err := range errs {
+					errMessages = append(errMessages, err.Error())
+				}
+				return errMessages
 			},
 		},
 	)
