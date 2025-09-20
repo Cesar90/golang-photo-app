@@ -2,6 +2,7 @@ package views
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"html/template"
 	"io"
@@ -13,6 +14,10 @@ import (
 	"github.com/Cesar90/golang-photo-app/models"
 	"github.com/gorilla/csrf"
 )
+
+type public interface {
+	Public() string
+}
 
 func Must(t Template, err error) Template {
 	if err != nil {
@@ -76,6 +81,7 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 		log.Printf("Cloning template: %v, err")
 		http.Error(w, "There was an error rendering the page.", http.StatusInternalServerError)
 	}
+	errMsgs := errMessages(errs...)
 	tpl = tpl.Funcs(
 		template.FuncMap{
 			"csrfField": func() template.HTML {
@@ -85,11 +91,20 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 				return context.User(r.Context())
 			},
 			"errors": func() []string {
-				var errMessages []string
-				for _, err := range errs {
-					errMessages = append(errMessages, err.Error())
-				}
-				return errMessages
+				//Avoid calling this code multiples times
+				// var errMessages []string
+				// for _, err := range errs {
+				// 	var pubErr public
+				// 	if errors.As(err, &pubErr) {
+				// 		errMessages = append(errMessages, pubErr.Public())
+				// 	} else {
+				// 		fmt.Println(err)
+				// 		errMessages = append(errMessages, "Something went wrong.")
+				// 	}
+				// 	// errMessages = append(errMessages, err.Error())
+				// }
+				// return errMessages
+				return errMsgs
 			},
 		},
 	)
@@ -108,4 +123,18 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 		return
 	}
 	io.Copy(w, &buf)
+}
+
+func errMessages(errs ...error) []string {
+	var msgs []string
+	for _, err := range errs {
+		var pubErr public
+		if errors.As(err, &pubErr) {
+			msgs = append(msgs, pubErr.Public())
+		} else {
+			fmt.Println(err)
+			msgs = append(msgs, "Something went wrong")
+		}
+	}
+	return msgs
 }
