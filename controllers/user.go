@@ -6,6 +6,8 @@ import (
 	"net/url"
 
 	"github.com/Cesar90/golang-photo-app/context"
+	// apperrors "github.com/Cesar90/golang-photo-app/errors"
+	"github.com/Cesar90/golang-photo-app/errors"
 	"github.com/Cesar90/golang-photo-app/models"
 )
 
@@ -65,6 +67,10 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 		// http.Error(w, err.Error(), http.StatusInternalServerError)
 		// http.Error(w, "Something went wrong", http.StatusInternalServerError)
 		// return
+		if errors.Is(err, models.ErrEmailTaken) {
+			// err = apperrors.Public(err, "That email address is already associtated with an account.")
+			err = errors.Public(err, "That email address is already associtated with an account.")
+		}
 		u.Templates.New.Execute(w, r, data, err)
 		return
 	}
