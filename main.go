@@ -216,6 +216,8 @@ func main() {
 		[]byte(cfg.CSRF.Key),
 		csrf.Secure(cfg.CSRF.Secure),
 		// csrf.TrustedOrigins([]string{"http://localhost:3000", "http://127.0.0.1:3000"}),
+		//This means the CSRF cookie is valid for the entire site
+		csrf.Path("/"),
 	)
 
 	// Setup controllers
@@ -299,7 +301,15 @@ func main() {
 		r.Get("/", usersC.CurrentUser)
 	})
 
-	r.Get("/galleries/new", galleriesC.New)
+	// r.Get("/galleries/new", galleriesC.New)
+	r.Route("/galleries", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			// This middleware will apply rules to set of
+			// routes
+			r.Use(umn.RequireUser)
+			r.Get("/new", galleriesC.New)
+		})
+	})
 
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Page not found", http.StatusNotFound)
