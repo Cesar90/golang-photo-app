@@ -308,6 +308,7 @@ func main() {
 			// routes
 			r.Use(umn.RequireUser)
 			r.Get("/new", galleriesC.New)
+			r.Post("/", galleriesC.Create)
 		})
 	})
 
