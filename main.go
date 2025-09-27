@@ -312,6 +312,7 @@ func main() {
 			// This middleware will apply rules to set of
 			// routes
 			r.Use(umn.RequireUser)
+			r.Get("/", galleriesC.Index)
 			r.Get("/new", galleriesC.New)
 			r.Post("/", galleriesC.Create)
 			r.Get("/{id}/edit", galleriesC.Edit)
