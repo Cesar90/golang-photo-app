@@ -124,6 +124,19 @@ func (g Galleries) Index(w http.ResponseWriter, r *http.Request) {
 	g.Templates.Index.Execute(w, r, data)
 }
 
+func (g Galleries) Delete(w http.ResponseWriter, r *http.Request) {
+	gallery, err := g.galleryByID(w, r, useMustOwnGallery)
+	if err != nil {
+		return
+	}
+	err = g.GalleryService.Delete(gallery.ID)
+	if err != nil {
+		http.Error(w, "Something went wrong", http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/galleries", http.StatusFound)
+}
+
 type galleryOpt func(http.ResponseWriter, *http.Request, *models.Gallery) error
 
 func (g Galleries) galleryByID(w http.ResponseWriter, r *http.Request, opts ...galleryOpt) (*models.Gallery, error) {
@@ -153,7 +166,7 @@ func (g Galleries) galleryByID(w http.ResponseWriter, r *http.Request, opts ...g
 
 func useMustOwnGallery(w http.ResponseWriter, r *http.Request, gallery *models.Gallery) error {
 	user := context.User(r.Context())
-	if gallery.ID != user.ID {
+	if gallery.UserID != user.ID {
 		http.Error(w, "You are not authorized to edit this gallery", http.StatusForbidden)
 		return fmt.Errorf("user does not have access to this gallery")
 	}
