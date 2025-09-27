@@ -271,6 +271,11 @@ func main() {
 		"galleries/index.gohtml", "tailwind.gohtml",
 	))
 
+	galleriesC.Templates.Show = views.Must(views.ParseFS(
+		templates.FS,
+		"galleries/show.gohtml", "tailwind.gohtml",
+	))
+
 	r := chi.NewRouter()
 	r.Use(csrfMv)
 	r.Use(umn.SetUser)
