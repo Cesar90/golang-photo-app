@@ -319,6 +319,7 @@ func main() {
 	// r.Get("/galleries/new", galleriesC.New)
 	r.Route("/galleries", func(r chi.Router) {
 		r.Get("/{id}", galleriesC.Show)
+		r.Get("/{id}/images/{filename}", galleriesC.Image)
 		r.Group(func(r chi.Router) {
 			// This middleware will apply rules to set of
 			// routes
