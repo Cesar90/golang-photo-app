@@ -4,7 +4,8 @@ tmp_dir = "tmp"
 [build]
 #cmd = "go build -o ./tmp/main ./main.go"
 #bin = "./tmp/main"
-cmd = "go build -o tmp\\main.exe main.go"
+#cmd = "go build -o tmp\\main.exe main.go"
+cmd = "go build -o tmp\\main.exe cmd/server/server.go"
 bin = "tmp\\main.exe"
 include_ext = ["go","gohtml"] #Only watch .go files
 #exclude_dir = ["tmp", "vendor", "node_modules", "public"]
