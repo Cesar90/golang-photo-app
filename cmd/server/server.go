@@ -149,6 +149,17 @@ func loadEnvConfig() (config, error) {
 }
 
 func main() {
+	cfg, err := loadEnvConfig()
+	if err != nil {
+		panic(err)
+	}
+	err = run(cfg)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func run(cfg config) error {
 	// http.HandleFunc("/", homeHandler)
 	// http.HandleFunc("/contact", contactHandler)
 	// http.HandleFunc("/", pathHandler)
@@ -178,24 +189,26 @@ func main() {
 	// })
 	// fmt.Println("Starting the server on :3000...")
 	// http.ListenAndServe(":3000", r)
-	cfg, err := loadEnvConfig()
-	if err != nil {
-		panic(err)
-	}
+	// cfg, err := loadEnvConfig()
+	// if err != nil {
+	// 	panic(err)
+	// }
 	///////////////////////////////
 	// Setup the database
 	// cfg := models.DefaultPostgresConfig()
 	// fmt.Println(cfg.String())
 	db, err := models.Open(cfg.PSQL)
 	if err != nil {
-		panic(err)
+		// panic(err)
+		return err
 	}
 	defer db.Close()
 
 	// err = models.Migrate(db, "migrations")
 	err = models.MigrateFS(db, migrations.FS, ".")
 	if err != nil {
-		panic(err)
+		// panic(err)
+		return err
 	}
 
 	// Setup services
@@ -359,11 +372,13 @@ func main() {
 	fmt.Printf("Starting the server on %s... \n", cfg.Server.Address)
 	// fmt.Println("Starting the server on :3000...")
 	// http.ListenAndServe(":3000", csrfMv(umn.SetUser(r)))
-	err = http.ListenAndServe(cfg.Server.Address, r)
-	if err != nil {
-		panic(err)
-	}
-	// http.ListenAndServe(":3000", TimerMiddleware(r.ServeHTTP))
+	// err = http.ListenAndServe(cfg.Server.Address, r)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// // http.ListenAndServe(":3000", TimerMiddleware(r.ServeHTTP))
+	// return nil
+	return http.ListenAndServe(cfg.Server.Address, r)
 }
 
 func TimerMiddleware(h http.HandlerFunc) http.HandlerFunc {
