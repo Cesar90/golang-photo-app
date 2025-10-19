@@ -9,7 +9,24 @@ cmd = "go build -o tmp\\main.exe cmd/server/server.go"
 bin = "tmp\\main.exe"
 include_ext = ["go","gohtml"] #Only watch .go files
 #exclude_dir = ["tmp", "vendor", "node_modules", "public"]
-exclude_dir = ["./public", "./tmp", "./vendor", "./node_modules","tmp", "vendor", "node_modules", "public"]
+exclude_dir = [
+    #"./public", 
+    #"./tmp", 
+    #"./vendor", 
+    #"./tailwind", 
+    #"./node_modules", 
+    #"tmp", 
+    #"vendor", 
+    #"node_modules", 
+    #"public", 
+    #"tailwind/node_modules"
+    "public",
+    "tmp",
+    "vendor",
+    "node_modules",
+    "tailwind",
+    "tailwind/node_modules"
+]
 delay = 1000 #ms
 
 [log]
