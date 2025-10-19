@@ -3,3 +3,6 @@ Steps to run migrations
 - cd migrations
 - goose create password_reset sql # Migration file will be created
 - goose fix #Once that migration is created run goose fix to change name 0003_password_reset.sql
+
+--------RUN DOCKER-----------
+docker compose -f docker-compose.yml -f docker-compose.production.yml up --build
